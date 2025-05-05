@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Solve Chinese Remainder Theorem (CRT) equations online with our fast and easy-to-use calculator. Input your congruence equations and get step-by-step solutions instantly.">
+    <meta name="keywords" content="Chinese Remainder Theorem, CRT Solver, Congruence Calculator, Modular Arithmetic, Number Theory, Online Math Solver">
+    <meta name="author" content="Your Name">
+    <title>Chinese Remainder Theorem Solver - Online Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4a69bd, #9980fa);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            font-size: 1.3rem;
+            color: #333;
+            margin-right: 15px;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #6e8efb;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            background: #6e8efb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #a777e3;
+            transform: scale(1.05);
+        }
+
+        .equation-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .equation {
+            display: flex;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .equation input {
+            width: 80px;
+            margin: 0 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #solution, #explanation {
+            text-align: left;
+            margin-top: 15px;
+            font-size: 1.15rem;
+            color: #333;
+        }
+
+        h2 {
+            color: #4a69bd;
+            margin: 15px 0;
+            font-size: 1.8rem;
+        }
+
+        .fas {
+            margin-right: 8px;
+            color: #6e8efb;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            input[type="number"] {
+                width: 80px;
+            }
+
+            .equation {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .equation input {
+                margin: 5px;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+  <i class="fas fa-calculator"></i> Chinese Remainder Theorem Solver 
+  <span style="font-size: 0.6em; color: black;">Created by 💙 Baraa Ali</span>
+</h1>
+        <div class="card">
+            <label for="num-equations">Number of Equations:</label>
+            <input type="number" id="num-equations" min="2" placeholder="e.g., 3" required>
+            <button onclick="generateInputs()"><i class="fas fa-plus"></i> Generate Inputs</button>
+        </div>
+        <div id="input-section" class="card hidden">
+            <div class="equation-container" id="equations"></div>
+            <button onclick="solveCRT()"><i class="fas fa-check"></i> Solve</button>
+        </div>
+        <div id="result-section" class="card hidden">
+            <h2>Solution</h2>
+            <div id="solution"></div>
+            <h2>Step-by-Step Explanation</h2>
+            <div id="explanation"></div>
+        </div>
+    </div>
+    <script>
+        // Generate input fields for equations horizontally
+        function generateInputs() {
+            const numEquations = parseInt(document.getElementById('num-equations').value);
+            if (numEquations < 2 || isNaN(numEquations)) {
+                alert('Please enter a number of equations (2 or more).');
+                return;
+            }
+
+            const equationsContainer = document.getElementById('equations');
+            equationsContainer.innerHTML = '';
+            document.getElementById('input-section').classList.remove('hidden');
+
+            for (let i = 0; i < numEquations; i++) {
+                const equationDiv = document.createElement('div');
+                equationDiv.className = 'equation';
+                equationDiv.innerHTML = `
+                    x ≡ <input type="number" id="a${i}" placeholder="a${i}" min="0" required> 
+                    (mod <input type="number" id="n${i}" placeholder="n${i}" min="1" required>)
+                `;
+                equationsContainer.appendChild(equationDiv);
+            }
+
+            document.getElementById('result-section').classList.add('hidden');
+        }
+
+        // GCD function using Euclidean algorithm
+        function gcd(a, b) {
+            while (b) {
+                a %= b;
+                [a, b] = [b, a];
+            }
+            return a;
+        }
+
+        // Extended Euclidean algorithm to find modular inverse
+        function modInverse(a, m) {
+            let [m0, x, y] = [m, 0, 1];
+            if (m === 1) return 0;
+
+            while (a > 1) {
+                const q = Math.floor(a / m);
+                [a, m] = [m, a % m];
+                [x, y] = [y - q * x, x];
+            }
+
+            return y < 0 ? y + m0 : y;
+        }
+
+        // Solve the Chinese Remainder Theorem
+        function solveCRT() {
+            const numEquations = parseInt(document.getElementById('num-equations').value);
+            const a = [], n = [];
+
+            // Collect inputs
+            for (let i = 0; i < numEquations; i++) {
+                const ai = parseInt(document.getElementById(`a${i}`).value);
+                const ni = parseInt(document.getElementById(`n${i}`).value);
+                if (isNaN(ai) || isNaN(ni) || ni < 1 || ai < 0) {
+                    alert(`Please enter valid positive integers for a${i} and n${i}.`);
+                    return;
+                }
+                a.push(ai);
+                n.push(ni);
+            }
+
+            // Check if moduli are pairwise coprime
+            for (let i = 0; i < numEquations; i++) {
+                for (let j = i + 1; j < numEquations; j++) {
+                    if (gcd(n[i], n[j]) !== 1) {
+                        alert(`Moduli n${i} and n${j} must be coprime.`);
+                        return;
+                    }
+                }
+            }
+
+            // Calculate product of all moduli
+            const N = n.reduce((prod, ni) => prod * ni, 1);
+            const Ni = n.map(ni => N / ni);
+            const yi = Ni.map((Ni_i, i) => modInverse(Ni_i, n[i]));
+
+            // Calculate x
+            let x = 0;
+            for (let i = 0; i < numEquations; i++) {
+                x += a[i] * Ni[i] * yi[i];
+            }
+            x = x % N;
+
+            // Display solution
+            const solutionDiv = document.getElementById('solution');
+            solutionDiv.innerHTML = `The solution is x ≡ ${x} (mod ${N})`;
+
+            // Generate step-by-step explanation
+            const explanationDiv = document.getElementById('explanation');
+            let explanation = `
+                <strong>Step 1: Input Equations</strong><br>
+                ${a.map((ai, i) => `x ≡ ${ai} (mod ${n[i]})`).join('<br>')}<br><br>
+                <strong>Step 2: Calculate N (product of moduli)</strong><br>
+                N = ${n.join(' × ')} = ${N}<br><br>
+                <strong>Step 3: Calculate Ni (N / ni)</strong><br>
+                ${n.map((ni, i) => `N${i} = N / n${i} = ${N} / ${ni} = ${Ni[i]}`).join('<br>')}<br><br>
+                <strong>Step 4: Find modular inverses yi</strong><br>
+                ${n.map((ni, i) => `y${i} is the modular inverse of ${Ni[i]} mod ${ni}, so ${Ni[i]} × y${i} ≡ 1 (mod ${ni}) ⇒ y${i} = ${yi[i]}`).join('<br>')}<br><br>
+                <strong>Step 5: Compute x</strong><br>
+                x = Σ (a_i × N_i × y_i) = ${a.map((ai, i) => `${ai} × ${Ni[i]} × ${yi[i]}`).join(' + ')} = ${x} (mod ${N})<br><br>
+                <strong>Final Solution</strong><br>
+                x ≡ ${x} (mod ${N})
+            `;
+            explanationDiv.innerHTML = explanation;
+
+            document.getElementById('result-section').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
